@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// 실습 단계 전용 "테스트 모드" 규칙.
+// 로그인 화면 없이 목업 사용자로 개발 중이라 request.auth가 없다 —
+// 그래서 지금은 모든 읽기/쓰기를 열어 둔다.
+//
+// PRD 07 리스크 항목: "접근 제어가 전적으로 Firestore 보안 규칙에 의존한다."
+// -> 다음 단계(실제 Firebase Auth 연동)에서 반드시 아래로 교체할 것:
+//   - profiles: 본인 문서만 쓰기, teacher는 같은 classId의 student 문서 읽기 허용
+//   - lists/cards: request.auth.uid == boardOwnerId 이거나
+//     request.auth.uid == 해당 class의 teacherId 인 경우만 허용
+//   - cards의 status == 'draft'는 작성자 본인과 teacher만 읽기 허용
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
